@@ -1,3 +1,15 @@
+# CKA Notes
+
+## Table of Contents
+- [Installing a Cluster](#installing-a-cluster)
+- [Upgrading a Cluster Version](#upgrading-a-cluster-version)
+  - [Step 1: Upgrade Kubeadm](#step-1-upgrade-kubeadm)
+  - [Step 2: Check Available Versions](#step-2-check-available-versions)
+  - [Step 3: Apply the Upgrade](#step-3-apply-the-upgrade)
+  - [Step 4: Drain the Control Plane Node](#step-4-drain-the-control-plane-node)
+  - [Step 5: Upgrade Kubelet and Kubectl](#step-5-upgrade-kubelet-and-kubectl)
+  - [Step 6: Restart Kubelet and Uncordon the Node](#step-6-restart-kubelet-and-uncordon-the-node)
+
 ## Installing a cluster
 
 Basic topology consists of a single node acting as the control plane and the worker nodes.
@@ -10,10 +22,11 @@ It is recommended to upgrade from a minor version to a next higher one (e.g from
 
 ![Process for a cluster version upgrade](./images/cluster-upgrade.png)
 
+### Step 1: Upgrade Kubeadm
+
 Start by upgrading the kubeadm version. 
 
 ```
-sh
 $ sudo apt update
 ...
 $ sudo apt-cache madison kubeadm
@@ -42,6 +55,8 @@ $ sudo apt-cache madison kubeadm
 ...
 ```
 
+### Step 2: Check Available Versions
+
 Upgrade kubeadm to a target version.
 
 ```
@@ -64,10 +79,11 @@ BuildDate:"2020-08-26T14:28:32Z", GoVersion:"go1.15", Compiler:"gc", \
 Platform:"linux/amd64"}
 ```
 
+### Step 3: Apply the Upgrade
+
 Check which versions are available to upgrade to and validate whether your current cluster version is upgradable.
 
 ```
-sh
 $ sudo kubeadm upgrade plan
 ...
 [upgrade] Fetching available versions to upgrade to
@@ -99,6 +115,8 @@ $ sudo kubeadm upgrade apply v1.19.0
 with upgrading your kubelets if you haven't already done so.
 ```
 
+### Step 4: Drain the Control Plane Node
+
 Drain the control plane node by evicting the workload. Any new workload won’t be schedulable on the node until uncordoned:
 
 ```
@@ -113,6 +131,8 @@ pod/coredns-f9fd979d6-2brkq evicted
 node/kube-control-plane evicted
 ```
 
+### Step 5: Upgrade Kubelet and Kubectl
+
 Upgrade the kubelet and the kubectl tool to the same version.
 
 ```
@@ -125,6 +145,8 @@ Setting up kubectl (1.19.0-00) ...
 kubelet set on hold.
 kubectl set on hold.
 ```
+
+### Step 6: Restart Kubelet and Uncordon the Node
 
 Restart the kubectl process:
 
